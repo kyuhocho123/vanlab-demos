@@ -483,9 +483,9 @@ func _build_light() -> void:
 func _apply_mood() -> void:
 	env.background_color = Color("0c0a09") if evening else Color("1d1916")
 	# Godot does not divide light energy by pi as three.js does, so the web numbers are scaled down.
-	env.ambient_light_energy = 0.1 if evening else 0.38
+	env.ambient_light_energy = 0.1 if evening else 0.34
 	env.tonemap_exposure = 0.95 if evening else 1.05
-	sun.light_energy = 0.0 if evening else 0.7
+	sun.light_energy = 0.0 if evening else 0.32
 	sun.shadow_enabled = not evening
 	sun.visible = not evening
 	led1.light_energy = 1.3 if evening else 0.25
