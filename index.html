@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VanLab test scenes</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #14171c; color: #e8ebf0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p { color: #98a1af; margin: 0 0 20px; }
+  a.card { display: block; padding: 16px; margin: 0 0 12px; border: 1px solid #313743; border-radius: 10px; background: #1d2128; color: inherit; text-decoration: none; }
+  a.card b { display: block; font-size: 17px; }
+  a.card span { color: #98a1af; font-size: 14px; }
+  a.card:active { background: #262b34; }
+  small { color: #98a1af; }
+</style>
+</head>
+<body>
+<main>
+  <h1>VanLab test scenes</h1>
+  <p>Throwaway scenes for comparing engines and looks. Not the product.</p>
+  <a class="card" href="./godot/"><b>Engine test — Godot route</b><span>The box scene built in Godot and exported for the web.</span></a>
+  <a class="card" href="./web-scene/"><b>Engine test — web route</b><span>The same box scene built with three.js.</span></a>
+  <a class="card" href="./look-test/"><b>Look test — three art styles</b><span>One van corner in Technical, Realistic and Cozy.</span></a>
+  <a class="card" href="./godot-look/"><b>Look check — Realistic, drawn by Godot</b><span>The same van corner in the Realistic style, built in Godot. Compare it with the look test above.</span></a>
+  <small>Build details: <a href="./status.json" style="color:#f0b74a">status</a> · <a href="./build-log.txt" style="color:#f0b74a">log</a></small>
+</main>
+</body>
+</html>
