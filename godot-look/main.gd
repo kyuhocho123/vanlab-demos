@@ -246,12 +246,22 @@ func _rounded_box(size: Vector3, r: float) -> Mesh:
 			for j in vc.size() - 1:
 				for i in w - 1:
 					var p0 := base + j * w + i
-					st.add_index(p0)
-					st.add_index(p0 + 1)
-					st.add_index(p0 + w + 1)
-					st.add_index(p0)
-					st.add_index(p0 + w + 1)
-					st.add_index(p0 + w)
+					# Godot treats clockwise triangles as the front. With the wrong order a face counts as a back
+					# face and is lit as if it pointed the other way, so the order depends on which side this is.
+					if side == 1:
+						st.add_index(p0)
+						st.add_index(p0 + w + 1)
+						st.add_index(p0 + 1)
+						st.add_index(p0)
+						st.add_index(p0 + w)
+						st.add_index(p0 + w + 1)
+					else:
+						st.add_index(p0)
+						st.add_index(p0 + 1)
+						st.add_index(p0 + w + 1)
+						st.add_index(p0)
+						st.add_index(p0 + w + 1)
+						st.add_index(p0 + w)
 	var mesh := st.commit()
 	box_cache[key] = mesh
 	return mesh
