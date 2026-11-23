@@ -342,6 +342,20 @@ func _wall() -> void:
 		for t in [[i0, i0 + 1, i0 + 3], [i0, i0 + 3, i0 + 2]]:
 			for v in t:
 				st.add_index(v)
+	var outer := count                       # outer skin, so the roof has a real top when seen from above
+	for k in line.size():
+		var p: Vector2 = line[k]
+		var n2: Vector2 = normals[k]
+		var o := p - n2 * thick
+		for x in [0.0, length]:
+			st.set_normal(Vector3(0.0, -n2.y, -n2.x))
+			st.add_vertex(Vector3(x, o.y, o.x))
+			count += 1
+	for k in line.size() - 1:
+		var i0 := outer + k * 2
+		for t in [[i0, i0 + 1, i0 + 3], [i0, i0 + 3, i0 + 2]]:
+			for v in t:
+				st.add_index(v)
 	var cap := count                         # the cut end of the wall at the open side
 	for k in line.size():
 		var p: Vector2 = line[k]
@@ -443,6 +457,7 @@ func _build_light() -> void:
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	env.tonemap_white = 6.0                          # headroom, so sunlit wood and tile keep their colour
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
@@ -470,7 +485,7 @@ func _apply_mood() -> void:
 	# Godot does not divide light energy by pi as three.js does, so the web numbers are scaled down.
 	env.ambient_light_energy = 0.1 if evening else 0.38
 	env.tonemap_exposure = 0.95 if evening else 1.05
-	sun.light_energy = 0.0 if evening else 0.85
+	sun.light_energy = 0.0 if evening else 0.7
 	sun.shadow_enabled = not evening
 	sun.visible = not evening
 	led1.light_energy = 1.3 if evening else 0.25
