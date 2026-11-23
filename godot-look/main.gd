@@ -446,10 +446,10 @@ func _build_light() -> void:
 	env = Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	var sky_mat := ProceduralSkyMaterial.new()       # stands in for the web version's generated room
-	sky_mat.sky_top_color = Color(0.9, 0.86, 0.8)
-	sky_mat.sky_horizon_color = Color(0.72, 0.67, 0.62)
-	sky_mat.ground_horizon_color = Color(0.62, 0.57, 0.52)
-	sky_mat.ground_bottom_color = Color(0.42, 0.37, 0.32)
+	sky_mat.sky_top_color = Color(1.0, 0.97, 0.92)
+	sky_mat.sky_horizon_color = Color(0.86, 0.82, 0.77)
+	sky_mat.ground_horizon_color = Color(0.74, 0.69, 0.64)
+	sky_mat.ground_bottom_color = Color(0.55, 0.5, 0.45)
 	sky_mat.sun_angle_max = 0.0
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
@@ -483,9 +483,9 @@ func _build_light() -> void:
 func _apply_mood() -> void:
 	env.background_color = Color("0c0a09") if evening else Color("1d1916")
 	# Godot does not divide light energy by pi as three.js does, so the web numbers are scaled down.
-	env.ambient_light_energy = 0.1 if evening else 0.34
+	env.ambient_light_energy = 0.1 if evening else 0.55
 	env.tonemap_exposure = 0.95 if evening else 1.05
-	sun.light_energy = 0.0 if evening else 0.32
+	sun.light_energy = 0.0 if evening else 0.28
 	sun.shadow_enabled = not evening
 	sun.visible = not evening
 	led1.light_energy = 1.3 if evening else 0.25
