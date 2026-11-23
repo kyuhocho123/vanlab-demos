@@ -1,0 +1,22 @@
+; VanLab engine test scene — Godot route. Everything is built by main.gd.
+config_version=5
+
+[application]
+
+config/name="VanLab engine test - Godot route"
+run/main_scene="res://main.tscn"
+
+[display]
+
+window/size/viewport_width=412
+window/size/viewport_height=915
+window/stretch/mode="disabled"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
