@@ -27,7 +27,7 @@ jobs:
 
       - name: Prepare output folder
         run: |
-          mkdir -p public/godot
+          mkdir -p public/godot public/godot-look
           cp -r site/. public/
           touch public/.nojekyll
           echo "commit ${GITHUB_SHA} on ${GITHUB_REF_NAME} at $(date -u +%FT%TZ)" > public/build-log.txt
@@ -67,13 +67,28 @@ jobs:
             ls -la public/godot
           } 2>&1 | tee -a public/build-log.txt
 
+      - name: Import and export the look check for the web
+        id: look
+        run: |
+          set -o pipefail
+          {
+            echo "--- look check: import ---"
+            ./godot --headless --path godot-look --import || echo "import exit code $?"
+            echo "--- look check: export ---"
+            ./godot --headless --path godot-look --export-release "Web" "$(pwd)/public/godot-look/index.html"
+            echo "--- look check: exported files ---"
+            ls -la public/godot-look
+          } 2>&1 | tee -a public/build-log.txt
+
       - name: Record the result
         if: always()
         run: |
           OK=false
           if [ -f public/godot/index.html ] && ls public/godot/*.wasm >/dev/null 2>&1; then OK=true; fi
-          printf '{"commit":"%s","branch":"%s","godot":"%s","download":"%s","export":"%s","godotBuildPresent":%s,"time":"%s"}\n' \
-            "${GITHUB_SHA}" "${GITHUB_REF_NAME}" "${{ steps.godot.outputs.tag }}" "${{ steps.godot.outcome }}" "${{ steps.export.outcome }}" "${OK}" "$(date -u +%FT%TZ)" \
+          LOOK=false
+          if [ -f public/godot-look/index.html ] && ls public/godot-look/*.wasm >/dev/null 2>&1; then LOOK=true; fi
+          printf '{"commit":"%s","branch":"%s","godot":"%s","download":"%s","export":"%s","godotBuildPresent":%s,"lookExport":"%s","lookBuildPresent":%s,"time":"%s"}\n' \
+            "${GITHUB_SHA}" "${GITHUB_REF_NAME}" "${{ steps.godot.outputs.tag }}" "${{ steps.godot.outcome }}" "${{ steps.export.outcome }}" "${OK}" "${{ steps.look.outcome }}" "${LOOK}" "$(date -u +%FT%TZ)" \
             > public/status.json
           cat public/status.json
 

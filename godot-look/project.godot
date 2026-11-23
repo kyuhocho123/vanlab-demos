@@ -1,0 +1,24 @@
+; VanLab look check - the Realistic van corner, drawn by Godot's Compatibility renderer.
+; Everything is built by main.gd. Task V1 in the VanLab plan.
+config_version=5
+
+[application]
+
+config/name="VanLab look check - Godot"
+run/main_scene="res://main.tscn"
+
+[display]
+
+window/size/viewport_width=412
+window/size/viewport_height=915
+window/stretch/mode="disabled"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=2
