@@ -105,8 +105,12 @@ try {
   await f1.move(b0.x - 6, b0.y - 4); await sleep(40);
   const f2 = await page.touchscreen.touchStart(b0.x + 60, b0.y + 60);
   for (let i = 1; i <= 8; i++) { await f1.move(b0.x - 6 - i * 9, b0.y - 4 - i * 9); await f2.move(b0.x + 60 + i * 9, b0.y + 60 + i * 9); await sleep(30); }
-  await f1.end(); await f2.end();
+  await f1.end();
+  // 6c. The finger that lifts last keeps sliding for a moment, as real fingers do. It must not spin the camera.
+  for (let i = 1; i <= 6; i++) { await f2.move(b0.x + 132 + i * 14, b0.y + 132 + i * 3); await sleep(30); }
+  await f2.end();
   s = await until((x) => x.camDist < 9.8 - 0.3, "pinch zoomed in");
+  assert.ok(Math.abs(s.camYaw - 0.8) < 1e-6 && Math.abs(s.camPitch - 0.48) < 1e-6, `camera angle unchanged after a pinch (yaw ${s.camYaw}, pitch ${s.camPitch})`);
   assert.deepEqual([item(s, "Bench").x, item(s, "Bench").z], [bench.x, bench.z], "item is back where it was after a pinch that began on it");
   assert.equal(s.counters.pinchHandovers, 1);
 
@@ -127,7 +131,7 @@ try {
   await sleep(600);
   s = await G();
   await page.screenshot({ path: shot });
-  console.log(`PASS: 9 groups of checks. Godot ${s.engine}. Load ${loadMs} ms. Canvas ${s.viewport.join("x")}. Screenshot: ${shot}`);
+  console.log(`PASS: 10 groups of checks. Godot ${s.engine}. Load ${loadMs} ms. Canvas ${s.viewport.join("x")}. Screenshot: ${shot}`);
   console.log("software-render stats (not a phone):", JSON.stringify(s.stats));
 } catch (e) {
   try { const pages = await browser.pages(); await pages[pages.length - 1].screenshot({ path: shot }); console.log("failure screenshot:", shot); } catch {}

@@ -43,6 +43,7 @@ var full_res := true
 var touches := {}        # finger index -> last position
 var drag = null          # {item, index, off_x, off_z, start_x, start_z}
 var pinch_dist := 0.0
+var gesture_lock := false  # true from the moment a second finger lands until every finger is lifted
 var pinch_mid := Vector2.ZERO
 var counters := {"itemDrags": 0, "orbits": 0, "pinchHandovers": 0}
 
@@ -266,6 +267,7 @@ func _unhandled_input(event) -> void:
 							"start_x": it.node.position.x, "start_z": it.node.position.z}
 						counters.itemDrags += 1
 			elif touches.size() == 2:
+				gesture_lock = true
 				if drag != null:
 					# A second finger means zoom or pan: put the item back and give both fingers to the camera.
 					_set_xz(drag.item.node, drag.start_x, drag.start_z)
@@ -279,6 +281,8 @@ func _unhandled_input(event) -> void:
 			touches.erase(event.index)
 			if drag != null and drag.index == event.index:
 				drag = null
+			if touches.size() == 0:
+				gesture_lock = false
 	elif event is InputEventScreenDrag:
 		if not touches.has(event.index):
 			return
@@ -289,7 +293,8 @@ func _unhandled_input(event) -> void:
 				var c := _clamp_inside(drag.item, fp.x + drag.off_x, fp.z + drag.off_z)
 				_set_xz(drag.item.node, c.x, c.y)
 				_refresh_overlaps()
-		elif touches.size() == 1:
+		elif touches.size() == 1 and not gesture_lock:
+			# After a pinch, the finger that lifts last must not spin the camera (reported by Kyu on his phone).
 			var size := get_viewport().get_visible_rect().size
 			var k := 3.2 / minf(size.x, size.y)
 			cam_yaw -= event.relative.x * k
