@@ -59,17 +59,9 @@ try {
   await sleep(1500);
   await page.screenshot({ path: join(shots, "godot-day.png") });
 
-  // one-finger drag on empty space orbits the camera
-  const [vw, vh] = g.viewport;
-  const yaw0 = g.camYaw;
-  await page.touchscreen.touchStart(vw * 0.5 / 2, vh * 0.45 / 2);
-  for (let i = 1; i <= 8; i++) await page.touchscreen.touchMove(vw * 0.5 / 2 + i * 8, vh * 0.45 / 2);
-  await page.touchscreen.touchEnd();
-  g = await until("orbit", (s) => Math.abs(s.camYaw - yaw0) > 0.05);
-  group(`one-finger drag orbits (yaw ${yaw0.toFixed(2)} to ${g.camYaw.toFixed(2)})`);
-
+  const vw = await page.evaluate("window.innerWidth"), vh = await page.evaluate("window.innerHeight"); // CSS pixels
   // the mood button works by touch
-  await page.touchscreen.tap(g.button.cx * vw / 2, g.button.cy * vh / 2);
+  await page.touchscreen.tap(g.button.cx * vw, g.button.cy * vh);
   g = await until("evening", (s) => s.mood === "evening");
   assert.equal(g.parts, 49, "49 parts in the evening mood");
   assert.equal(g.sunEnergy, 0, "the sun is off in the evening");
@@ -78,9 +70,18 @@ try {
   group("the light button switches to evening by touch, still 49 parts");
   await sleep(1500);
   await page.screenshot({ path: join(shots, "godot-evening.png") });
-  await page.touchscreen.tap(g.button.cx * vw / 2, g.button.cy * vh / 2);
+  await page.touchscreen.tap(g.button.cx * vw, g.button.cy * vh);
   g = await until("day again", (s) => s.mood === "day");
   group("and back to day");
+
+  // one-finger drag on empty space orbits the camera
+  const yaw0 = g.camYaw;
+  await page.touchscreen.touchStart(vw * 0.5, vh * 0.45);
+  for (let i = 1; i <= 8; i++) await page.touchscreen.touchMove(vw * 0.5 + i * 5, vh * 0.45);
+  await page.touchscreen.touchEnd();
+  g = await until("orbit", (s) => Math.abs(s.camYaw - yaw0) > 0.05);
+  assert.ok(g.camYaw > 0.13, "a 40-pixel swipe must not throw the camera to its limit");
+  group(`one-finger drag orbits (yaw ${yaw0.toFixed(2)} to ${g.camYaw.toFixed(2)})`);
 
   const overflow = await page.evaluate("document.documentElement.scrollWidth - window.innerWidth");
   assert.ok(overflow <= 0, `no sideways overflow (got ${overflow})`);

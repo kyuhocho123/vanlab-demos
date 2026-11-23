@@ -14,7 +14,7 @@ var evening := false
 var cam: Camera3D
 var cam_dist := 4.4
 var cam_yaw := 0.78
-var cam_pitch := 0.22
+var cam_pitch := 0.4
 var tall := true
 var env: Environment
 var sun: DirectionalLight3D
@@ -432,10 +432,10 @@ func _build_light() -> void:
 	env = Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	var sky_mat := ProceduralSkyMaterial.new()       # stands in for the web version's generated room
-	sky_mat.sky_top_color = Color(0.95, 0.9, 0.82)
-	sky_mat.sky_horizon_color = Color(0.62, 0.56, 0.5)
-	sky_mat.ground_horizon_color = Color(0.42, 0.36, 0.31)
-	sky_mat.ground_bottom_color = Color(0.2, 0.16, 0.13)
+	sky_mat.sky_top_color = Color(0.9, 0.86, 0.8)
+	sky_mat.sky_horizon_color = Color(0.72, 0.67, 0.62)
+	sky_mat.ground_horizon_color = Color(0.62, 0.57, 0.52)
+	sky_mat.ground_bottom_color = Color(0.42, 0.37, 0.32)
 	sky_mat.sun_angle_max = 0.0
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
@@ -467,15 +467,16 @@ func _build_light() -> void:
 
 func _apply_mood() -> void:
 	env.background_color = Color("0c0a09") if evening else Color("1d1916")
-	env.ambient_light_energy = 0.14 if evening else 0.6
+	# Godot does not divide light energy by pi as three.js does, so the web numbers are scaled down.
+	env.ambient_light_energy = 0.1 if evening else 0.38
 	env.tonemap_exposure = 0.95 if evening else 1.05
-	sun.light_energy = 0.0 if evening else 1.7
+	sun.light_energy = 0.0 if evening else 0.85
 	sun.shadow_enabled = not evening
 	sun.visible = not evening
-	led1.light_energy = 2.6 if evening else 0.5
-	led2.light_energy = 2.2 if evening else 0.4
-	_mat("led").emission_energy_multiplier = 5.0 if evening else 2.0
-	_mat("glass").emission_energy_multiplier = 0.03 if evening else 1.0
+	led1.light_energy = 1.3 if evening else 0.25
+	led2.light_energy = 1.1 if evening else 0.2
+	_mat("led").emission_energy_multiplier = 2.5 if evening else 1.2
+	_mat("glass").emission_energy_multiplier = 0.03 if evening else 0.55
 	mood_button.text = "Light: evening" if evening else "Light: day"
 
 
@@ -527,8 +528,10 @@ func _unhandled_input(event) -> void:
 	elif event is InputEventScreenDrag:
 		touches[event.index] = event.position
 		if touches.size() == 1 and not gesture_lock:
-			cam_yaw = clampf(cam_yaw - event.relative.x * 0.006, 0.12, 1.42)   # stay in front of both walls
-			cam_pitch = clampf(cam_pitch + event.relative.y * 0.006, 0.03, 1.0)
+			var size := get_viewport().get_visible_rect().size
+			var k := 2.6 / minf(size.x, size.y)      # a swipe across the screen turns about 150 degrees on any screen
+			cam_yaw = clampf(cam_yaw - event.relative.x * k, 0.12, 1.42)   # stay in front of both walls
+			cam_pitch = clampf(cam_pitch + event.relative.y * k, 0.03, 1.0)
 			counters.orbits += 1
 		elif touches.size() >= 2:
 			var d := _pinch()
