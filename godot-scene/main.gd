@@ -88,14 +88,14 @@ func _build_world() -> void:
 	env.background_color = Color("14171c")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(1, 1, 1)
-	env.ambient_light_energy = 0.6
+	env.ambient_light_energy = 0.32
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 
 	sun = DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-58, 35, 0)
-	sun.light_energy = 1.3
+	sun.light_energy = 0.85
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 30.0
 	add_child(sun)
